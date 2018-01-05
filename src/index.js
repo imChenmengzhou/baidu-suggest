@@ -12,16 +12,20 @@ import jsonp from 'jsonp';
     https://www.baidu.com/su?wd=a&cb=cb
     param是回调函数callback的名字,jsonp函数url参数不是用引号包裹的？？？？
     4.
-第二部分：实现上下方向键控制关联列表的样式
+第二部分：实现上下方向键控制关联列表的样式和input值随箭头改变而改变
     (1)状态加上index (2)li加上触发类名 （3）input搜索框加上onKeyDown事件 
     1.注意className那里需要加上空格！（条件运算符成立及会在后面加上另一个类名）
     2.input的onkeydown事件
     3.用箭头函数不用绑定this,事件函数一般以Handle开头
     4.event.keyCode    向上：keyCode=38   向下：keyCode=40
-    5.上下箭头调整时，Input内的值也要跟着变 
+    5.上下箭头调整时，Input内的值也要跟着变 input上的value={this.state.words[this.state.index]}
 第三部分：箭头回到输入框时，框内值应该为用户输入的关键字
     1.在handleChange函数内加上this.wd=wd ;关键字缓存
     2.在input的value里加上条件，当this.state.index=-1时，值为用户输入值
+第四部分：处理边界问题
+    1.onchange事件只在用户输入值时触发！而通过上下按键然后后期赋值使value值改变不会触发handleChange()
+    （但是按数字键可以选中并赋值）--解释在handleChange里缓存wd
+    2.在handleKeyDown里通过判断Index的值，给index边界时重新赋值，实现边界切换
 */
 export default class Suggest extends Component{
     constructor(){
@@ -44,14 +48,19 @@ export default class Suggest extends Component{
     }
     handleKeyDown=(event)=>{
         let code = event.keyCode;
-        console.log(code);
         //当按下的是向上或向下的箭头键时，触发
         if(code == 38 || 40){
             let index = this.state.index;
             if(code == 38){
-                index--
+                index--;
+                if(index==-2){
+                    index=this.state.words.length-1;
+                }
             }else if(code == 40){
-                index++
+                index++;
+                if(index==this.state.words.length){
+                    index=-1;
+                }
             }
             this.setState({index:index})
         }
