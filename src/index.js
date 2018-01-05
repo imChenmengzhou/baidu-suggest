@@ -18,7 +18,10 @@ import jsonp from 'jsonp';
     2.input的onkeydown事件
     3.用箭头函数不用绑定this,事件函数一般以Handle开头
     4.event.keyCode    向上：keyCode=38   向下：keyCode=40
-    5.上下箭头调整时，Input内的值也要跟着变 value={this.state.words[this.state.index]}
+    5.上下箭头调整时，Input内的值也要跟着变 
+第三部分：箭头回到输入框时，框内值应该为用户输入的关键字
+    1.在handleChange函数内加上this.wd=wd ;关键字缓存
+    2.在input的value里加上条件，当this.state.index=-1时，值为用户输入值
 */
 export default class Suggest extends Component{
     constructor(){
@@ -30,6 +33,8 @@ export default class Suggest extends Component{
     }
     handleChange=(event)=>{
         let wd = event.target.value;
+        //缓存用户输入的关键字
+        this.wd=wd;
         jsonp(`http://www.baidu.com/su?wd=${wd}`,{
             param:'cb'
         },(err,data)=>{
@@ -58,7 +63,7 @@ export default class Suggest extends Component{
                     <div className='col-sm-8 col-sm-offset-2'>
                         <div className='panel panel-default'>
                             <div className='panel-heading'>
-                                <input onKeyDown={this.handleKeyDown} value={this.state.words[this.state.index]} type='text' className='form-control' onChange={this.handleChange}/>
+                                <input onKeyDown={this.handleKeyDown} value={this.state.index==-1?this.wd:this.state.words[this.state.index]} type='text' className='form-control' onChange={this.handleChange}/>
                             </div>
                             <div className='panel-body'>
                                 <ul className='list-group'>
