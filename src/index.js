@@ -26,6 +26,14 @@ import jsonp from 'jsonp';
     1.onchange事件只在用户输入值时触发！而通过上下按键然后后期赋值使value值改变不会触发handleChange()
     （但是按数字键可以选中并赋值）--解释在handleChange里缓存wd
     2.在handleKeyDown里通过判断Index的值，给index边界时重新赋值，实现边界切换
+第五部分：回车搜索--给Li加上回车事件，然后获取关键字，调取搜索接口即可
+    1.window.location.href='`http://www.baidu.com/s?wd=${event.target.value}`'
+    2.onKeyUp和onKeyDown触发事件可以一样，所以为了区别之前的onKeyDown,这里将回车事件
+    放在onKeyUp里并添加给input，(为什么不是Li?，因为上下切换的时候主体元素是input而不是li)
+    优化：把input的onKeyUp事件放在了它的onKeyDown里；之前enter()代码去掉
+总结：报错Warning: A component is changing an uncontrolled input of type text to be controlled. 
+Input elements should not switch from uncontrolled to controlled (or vice versa)
+是因为我们在Input的value上修改了this.state,而没有通过serState去设置，暂时忽略
 */
 export default class Suggest extends Component{
     constructor(){
@@ -61,10 +69,17 @@ export default class Suggest extends Component{
                 if(index==this.state.words.length){
                     index=-1;
                 }
+            }else if(code == 13){
+                window.location.href=`http://www.baidu.com/s?wd=${event.target.value}`;
             }
             this.setState({index:index})
         }
     }
+    // enter=(event)=>{
+    //     if(event.keyCode==13){
+    //         window.location.href=`http://www.baidu.com/s?wd=${event.target.value}`;
+    //     }
+    // }
     render(){
         return(
             <div className='container'>
